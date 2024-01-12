@@ -55,3 +55,40 @@ def mse(y_true, y_pred):
 
 def mse_derivative(y_true, y_pred):
   return 2 * (y_pred-y_true)/np.size(y_true)
+
+
+
+X = np.reshape([[0,0],[1,0],[0,1],[1,1]], (4,2,1)) # reshape to 4,2,1
+Y = np.reshape([[0],[1],[1],[0]], (4,1,1))
+
+network = [
+    DenseLayer(2,69),
+    tanh(),
+    DenseLayer(69,420),
+    tanh(),
+    DenseLayer(420,1),
+    tanh(),
+    DenseLayer(1,1)
+]
+
+epochs = 3000
+learning_rate = 0.001
+
+for epoch in range(epochs):
+  error = 0
+
+  for x,y in zip(X,Y):
+    output = x
+
+    for layer in network:
+      output = layer.ForwardPropagation(output)
+
+    error += mse(y,output)
+
+    grad = mse_derivative(y, output)
+
+    for layer in reversed(network):
+      grad = layer.BackwardPropagation(grad, learning_rate)
+
+    error /= len(x)
+    print(f" Epoch Number: {epoch+1},Loss/Error = {error}")
